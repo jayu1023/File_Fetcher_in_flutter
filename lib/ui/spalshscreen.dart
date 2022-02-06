@@ -47,12 +47,22 @@ class _SplashScreenState extends State<SplashScreen> {
                     crossAxisCount: 2),
                 itemBuilder: (context, index) {
                   File file = File(imageList[index]);
-                  return SizedBox(
-                    width: 100.0,
-                    height: 100.00,
-                    child: Image.file(
-                      file,
-                      fit: BoxFit.contain,
+                  return InkWell(
+                    onTap: () {
+                      File img = new File(imageList[index]);
+
+                      savefileinstorage(imageList[index], img).then((value) =>
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("file is saved on ${value!}"))));
+                      // setState(() {});
+                    },
+                    child: Container(
+                      width: 100.0,
+                      height: 100.00,
+                      child: Image.file(
+                        file,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   );
                 },
@@ -84,5 +94,33 @@ class _SplashScreenState extends State<SplashScreen> {
       isgranted = Permission.storage.isGranted;
     }
     setState(() {});
+  }
+
+  Future<String?> savefileinstorage(String? path, File img) async {
+    Directory _appDocDirFolder = Directory('/storage/emulated/0/.Mystatus/');
+
+    if (await _appDocDirFolder.exists()) {
+      File file = new File(path!);
+
+      checkpermission();
+      print(file.copySync("${_appDocDirFolder.path}image3.jpg"));
+      return file
+          .copySync(
+              "/storage/emulated/0/image${DateTime.fromMillisecondsSinceEpoch(1560343627 * 1000)}.jpg")
+          .path;
+    } else {
+      final Directory _appDocDirNewFolder =
+          await _appDocDirFolder.create(recursive: true);
+      _appDocDirNewFolder.path;
+
+      File file = new File(path!);
+
+      checkpermission();
+      print(file.copySync("${_appDocDirFolder.path}image3.jpg"));
+      return file
+          .copySync(
+              "/storage/emulated/0/image${DateTime.fromMillisecondsSinceEpoch(1560343627 * 1000)}.jpg")
+          .path;
+    }
   }
 }

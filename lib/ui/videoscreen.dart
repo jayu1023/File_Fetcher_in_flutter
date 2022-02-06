@@ -36,6 +36,9 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("hello"),
+      ),
       body: FutureBuilder(
         future: isgranted,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -50,11 +53,10 @@ class _VideoScreenState extends State<VideoScreen> {
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
                 child: GridView.builder(
+                    itemCount: imagelist.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2),
                     itemBuilder: (context, index) {
-                      File file =
-                          new File(getthumbnail(imagelist[index]).toString());
                       return Container(
                           width: 100.0,
                           height: 100.0,
@@ -67,8 +69,8 @@ class _VideoScreenState extends State<VideoScreen> {
                                   width: 100.0,
                                   height: 100.0,
                                   child: Image.file(
-                                    snapshot.data,
-                                    fit: BoxFit.covers,
+                                    File(snapshot.data),
+                                    fit: BoxFit.contain,
                                   ),
                                 );
                               } else {
@@ -99,8 +101,7 @@ class _VideoScreenState extends State<VideoScreen> {
 
   Future<String> getthumbnail(String videoPath) async {
     String thumb = await Thumbnails.getThumbnail(
-        thumbnailFolder:
-            ' /storage/emulated/0/Whatsapp/media', // creates the specified path if it doesnt exist
+        // creates the specified path if it doesnt exist
         videoFile: videoPath,
         imageType: ThumbFormat.PNG,
         quality: 30);
