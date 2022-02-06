@@ -20,7 +20,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Directory _photoDir = new Directory('/storage/emulated/0/Pictures/');
+    final Directory _photoDir =
+        new Directory('/storage/emulated/0/Whatsapp/media/.Statuses');
     // checkpermission();
     return Scaffold(
         body: FutureBuilder(
@@ -33,17 +34,29 @@ class _SplashScreenState extends State<SplashScreen> {
             var imageList = _photoDir
                 .listSync()
                 .map((item) => item.path)
+                .where((element) => element.endsWith("jpg"))
                 .toList(growable: false);
 
             print("--->.>>.${imageList}");
-            return InkWell(
-              onTap: () {
-                setState(() {});
-              },
-              child: Container(
-                child: Center(
-                  child: Text("data is loading"),
-                ),
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: GridView.builder(
+                addRepaintBoundaries: true,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2),
+                itemBuilder: (context, index) {
+                  File file = File(imageList[index]);
+                  return SizedBox(
+                    width: 100.0,
+                    height: 100.00,
+                    child: Image.file(
+                      file,
+                      fit: BoxFit.contain,
+                    ),
+                  );
+                },
+                itemCount: imageList.length,
               ),
             );
           } else {
