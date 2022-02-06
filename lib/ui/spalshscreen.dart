@@ -53,6 +53,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
                       savefileinstorage(imageList[index], img).then((value) =>
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              duration: Duration(seconds: 1),
                               content: Text("file is saved on ${value!}"))));
                       // setState(() {});
                     },
@@ -99,14 +100,15 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<String?> savefileinstorage(String? path, File img) async {
     Directory _appDocDirFolder = Directory('/storage/emulated/0/.Mystatus/');
 
+    var dt = DateTime.now();
     if (await _appDocDirFolder.exists()) {
       File file = new File(path!);
 
       checkpermission();
-      print(file.copySync("${_appDocDirFolder.path}image3.jpg"));
+      // print(file.copySync("${_appDocDirFolder.path}image3.jpg"));
       return file
           .copySync(
-              "/storage/emulated/0/image${DateTime.fromMillisecondsSinceEpoch(1560343627 * 1000)}.jpg")
+              "/storage/emulated/0/image${dt.microsecond}${dt.timeZoneOffset.toString().substring(2, 5)}.jpg")
           .path;
     } else {
       final Directory _appDocDirNewFolder =
@@ -116,10 +118,10 @@ class _SplashScreenState extends State<SplashScreen> {
       File file = new File(path!);
 
       checkpermission();
-      print(file.copySync("${_appDocDirFolder.path}image3.jpg"));
+      // print(file.copySync("${_appDocDirFolder.path}image3.jpg"));
       return file
           .copySync(
-              "/storage/emulated/0/image${DateTime.fromMillisecondsSinceEpoch(1560343627 * 1000)}.jpg")
+              "/storage/emulated/0/image${dt.microsecond}${dt.timeZoneOffset.toString().substring(2, 5)}.jpg")
           .path;
     }
   }
