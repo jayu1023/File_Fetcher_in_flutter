@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   path_provider: ^2.0.8
   permission_handler: ^8.3.0
+  thumbnails: ^1.0.1
 
 
 
