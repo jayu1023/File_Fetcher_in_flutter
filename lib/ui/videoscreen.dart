@@ -57,35 +57,129 @@ class _VideoScreenState extends State<VideoScreen> {
 
                 child: LiveGrid.options(
                     itemBuilder: (context, index, animation) {
-                      return Card(
-                        elevation: 10.0,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0)),
-                        child: Container(
-                            width: 100.0,
-                            height: 100.0,
-                            child: FutureBuilder(
-                              future: getthumbnail(imagelist[index]),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<dynamic> snapshot) {
-                                if (snapshot.hasData) {
-                                  File vidthumbfile = new File(snapshot.data);
-                                  return Container(
+                      return FadeTransition(
+                          opacity: Tween<double>(
+                            begin: 0,
+                            end: 1,
+                          ).animate(animation),
+                          // And slide transition
+                          child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(0, -0.1),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: Card(
+                                elevation: 10.0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0)),
+                                child: Container(
                                     width: 100.0,
                                     height: 100.0,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0),
-                                        image: DecorationImage(
-                                            image: FileImage(vidthumbfile),
-                                            fit: BoxFit.cover)),
-                                  );
-                                } else {
-                                  return Container();
-                                }
-                              },
-                            )),
-                      );
+                                    child: FutureBuilder(
+                                      future: getthumbnail(imagelist[index]),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<dynamic> snapshot) {
+                                        if (snapshot.hasData) {
+                                          File vidthumbfile =
+                                              new File(snapshot.data);
+                                          return Stack(
+                                            alignment: Alignment.bottomRight,
+                                            children: [
+                                              Positioned.fill(
+                                                child: Container(
+                                                  width: 100.0,
+                                                  height: 100.0,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20.0),
+                                                      image: DecorationImage(
+                                                          image: FileImage(
+                                                              vidthumbfile),
+                                                          fit: BoxFit.cover)),
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 100.0,
+                                                decoration: BoxDecoration(
+                                                    color: Colors.black
+                                                        .withOpacity(0.5),
+                                                    borderRadius: BorderRadius
+                                                        .only(
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    20.0),
+                                                            bottomRight:
+                                                                Radius.circular(
+                                                                    20.0))),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 15.0,
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 5.0,
+                                                              bottom: 5.0),
+                                                      child: InkWell(
+                                                        child: Icon(
+                                                          Icons.share,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 10.0,
+                                                    ),
+                                                    Visibility(
+                                                      visible: true,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                top: 5.0,
+                                                                bottom: 5.0),
+                                                        child: InkWell(
+                                                          child: Icon(
+                                                            Icons.download,
+                                                            color: Colors.white,
+                                                          ),
+                                                          onTap: () {
+                                                            // savefileinstorage(
+                                                            //         imageList[index],
+                                                            //         file)
+                                                            //     .then((value) {
+                                                            //   if (value!['isSuccess'] ==
+                                                            //       true) {
+                                                            //     ScaffoldMessenger.of(
+                                                            //             context)
+                                                            //         .showSnackBar(SnackBar(
+                                                            //             content: Text(
+                                                            //                 "Your File is saved")));
+                                                            //   }
+                                                            // });
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 8.0,
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        } else {
+                                          return Container();
+                                        }
+                                      },
+                                    )),
+                              )));
                     },
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
