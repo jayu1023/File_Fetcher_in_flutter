@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:thumbnails/thumbnails.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -50,37 +51,90 @@ class _VideoScreenState extends State<VideoScreen> {
                   .where((element) => element.endsWith("mp4"))
                   .toList(growable: false);
               return (Container(
+                margin: EdgeInsets.only(right: 5.0, left: 5.0, top: 2.0),
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
-                child: GridView.builder(
-                    itemCount: imagelist.length,
+
+                child: LiveGrid.options(
+                    itemBuilder: (context, index, animation) {
+                      return Card(
+                        elevation: 10.0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0)),
+                        child: Container(
+                            width: 100.0,
+                            height: 100.0,
+                            child: FutureBuilder(
+                              future: getthumbnail(imagelist[index]),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<dynamic> snapshot) {
+                                if (snapshot.hasData) {
+                                  File vidthumbfile = new File(snapshot.data);
+                                  return Container(
+                                    width: 100.0,
+                                    height: 100.0,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        image: DecorationImage(
+                                            image: FileImage(vidthumbfile),
+                                            fit: BoxFit.cover)),
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              },
+                            )),
+                      );
+                    },
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2),
-                    itemBuilder: (context, index) {
-                      return Container(
-                          width: 100.0,
-                          height: 100.0,
-                          child: FutureBuilder(
-                            future: getthumbnail(imagelist[index]),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<dynamic> snapshot) {
-                              if (snapshot.hasData) {
-                                return Container(
-                                  width: 100.0,
-                                  height: 100.0,
-                                  child: Image.file(
-                                    File(snapshot.data),
-                                    fit: BoxFit.contain,
-                                  ),
-                                );
-                              } else {
-                                return Container(
-                                  child: Text("No videos here"),
-                                );
-                              }
-                            },
-                          ));
-                    }),
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10.0,
+                        mainAxisSpacing: 10.0),
+                    itemCount: imagelist.length,
+                    options: LiveOptions(
+                        delay: Duration(milliseconds: 200),
+                        showItemInterval: Duration(milliseconds: 100),
+                        reAnimateOnVisibility: true,
+                        showItemDuration: Duration(milliseconds: 100))),
+
+                // child: GridView.builder(
+                //     itemCount: imagelist.length,
+                //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                //         crossAxisCount: 2,
+                //         crossAxisSpacing: 10.0,
+                //         mainAxisSpacing: 10.0),
+                //     itemBuilder: (context, index) {
+                // return Card(
+                //   elevation: 10.0,
+                //   shape: RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(20.0)),
+                //   child: Container(
+                //       width: 100.0,
+                //       height: 100.0,
+                //       child: FutureBuilder(
+                //         future: getthumbnail(imagelist[index]),
+                //         builder: (BuildContext context,
+                //             AsyncSnapshot<dynamic> snapshot) {
+                //           if (snapshot.hasData) {
+                //             File vidthumbfile = new File(snapshot.data);
+                //             return Container(
+                //               width: 100.0,
+                //               height: 100.0,
+                //               decoration: BoxDecoration(
+                //                   borderRadius:
+                //                       BorderRadius.circular(20.0),
+                //                   image: DecorationImage(
+                //                       image: FileImage(vidthumbfile),
+                //                       fit: BoxFit.cover)),
+                //             );
+                //           } else {
+                //             return Container();
+                //           }
+                //         },
+                //       )),
+                // );
+                //     }),
               ));
             } else {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
