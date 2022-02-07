@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -22,6 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     final Directory _photoDir =
         new Directory('/storage/emulated/0/Whatsapp/media/.Statuses');
+    // final Directory _photoDir = new Directory('/storage/emulated/0/Download');
     // checkpermission();
     return Scaffold(
         body: FutureBuilder(
@@ -39,31 +41,87 @@ class _SplashScreenState extends State<SplashScreen> {
 
             print("--->.>>.${imageList}");
             return Container(
+              margin: EdgeInsets.only(right: 5.0, left: 5.0),
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               child: GridView.builder(
                 addRepaintBoundaries: true,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
                     crossAxisCount: 2),
                 itemBuilder: (context, index) {
                   File file = File(imageList[index]);
-                  return InkWell(
-                    onTap: () {
-                      File img = new File(imageList[index]);
-
-                      savefileinstorage(imageList[index], img).then((value) =>
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 1),
-                              content: Text("file is saved on ${value!}"))));
-                      // setState(() {});
-                    },
-                    child: Container(
-                      width: 100.0,
-                      height: 100.00,
-                      child: Image.file(
-                        file,
-                        fit: BoxFit.contain,
-                      ),
+                  return Container(
+                    width: 100.0,
+                    height: 100.00,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.0)),
+                    child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20.0),
+                                image: DecorationImage(
+                                    image: FileImage(file), fit: BoxFit.cover)),
+                          ),
+                        ),
+                        Container(
+                          width: 100.0,
+                          decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(30.0),
+                                  bottomRight: Radius.circular(30.0))),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              SizedBox(
+                                width: 15.0,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 5.0, bottom: 5.0),
+                                child: InkWell(
+                                  child: Icon(
+                                    Icons.share,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10.0,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 5.0, bottom: 5.0),
+                                child: InkWell(
+                                  child: Icon(
+                                    Icons.download,
+                                    color: Colors.white,
+                                  ),
+                                  onTap: () {
+                                    savefileinstorage(imageList[index], file)
+                                        .then((value) {
+                                      if (value!['isSuccess'] == true) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    "Your File is saved")));
+                                      }
+                                    });
+                                  },
+                                ),
+                              ),
+                              SizedBox(
+                                width: 8.0,
+                              )
+                            ],
+                          ),
+                        )
+                      ],
                     ),
                   );
                 },
@@ -97,32 +155,10 @@ class _SplashScreenState extends State<SplashScreen> {
     setState(() {});
   }
 
-  Future<String?> savefileinstorage(String? path, File img) async {
-    Directory _appDocDirFolder = Directory('/storage/emulated/0/.Mystatus/');
-
-    var dt = DateTime.now();
-    if (await _appDocDirFolder.exists()) {
-      File file = new File(path!);
-
-      checkpermission();
-      // print(file.copySync("${_appDocDirFolder.path}image3.jpg"));
-      return file
-          .copySync(
-              "/storage/emulated/0/image${dt.microsecond}${dt.timeZoneOffset.toString().substring(2, 5)}.jpg")
-          .path;
-    } else {
-      final Directory _appDocDirNewFolder =
-          await _appDocDirFolder.create(recursive: true);
-      _appDocDirNewFolder.path;
-
-      File file = new File(path!);
-
-      checkpermission();
-      // print(file.copySync("${_appDocDirFolder.path}image3.jpg"));
-      return file
-          .copySync(
-              "/storage/emulated/0/image${dt.microsecond}${dt.timeZoneOffset.toString().substring(2, 5)}.jpg")
-          .path;
-    }
+  Future<Map?> savefileinstorage(String? path, File img) async {
+    final result =
+        await ImageGallerySaver.saveFile(path!, name: path.split("/").last);
+    print(result);
+    return result;
   }
 }
