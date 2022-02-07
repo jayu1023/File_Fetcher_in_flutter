@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:thumbnails/thumbnails.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -16,7 +17,7 @@ class _VideoScreenState extends State<VideoScreen> {
   Future<bool>? isgranted;
   final Directory path_dir =
       new Directory('/storage/emulated/0/Whatsapp/media/.Statuses');
-
+  final Directory stored_dir = new Directory('/storage/emulated/0/Pictures/');
   void checkpermission() async {
     if (await Permission.storage.isGranted) {
       isgranted = Permission.storage.isGranted;
@@ -46,8 +47,16 @@ class _VideoScreenState extends State<VideoScreen> {
           if (snapshot.data != null) {
             if (snapshot.data == true) {
               var imagelist = path_dir
-                  .listSync(recursive: true, followLinks: false)
+                  .listSync(recursive: false, followLinks: false)
                   .map((e) => e.path)
+                  .where((element) => element.endsWith("mp4"))
+                  .toList(growable: false);
+
+              var storedvdlist = stored_dir
+                  .listSync(
+                    recursive: false,
+                  )
+                  .map((e) => e.path.split("/").last)
                   .where((element) => element.endsWith("mp4"))
                   .toList(growable: false);
               return (Container(
@@ -136,7 +145,11 @@ class _VideoScreenState extends State<VideoScreen> {
                                                       width: 10.0,
                                                     ),
                                                     Visibility(
-                                                      visible: true,
+                                                      visible: !storedvdlist
+                                                          .contains(
+                                                              imagelist[index]
+                                                                  .split("/")
+                                                                  .last),
                                                       child: Padding(
                                                         padding:
                                                             const EdgeInsets
@@ -149,19 +162,20 @@ class _VideoScreenState extends State<VideoScreen> {
                                                             color: Colors.white,
                                                           ),
                                                           onTap: () {
-                                                            // savefileinstorage(
-                                                            //         imageList[index],
-                                                            //         file)
-                                                            //     .then((value) {
-                                                            //   if (value!['isSuccess'] ==
-                                                            //       true) {
-                                                            //     ScaffoldMessenger.of(
-                                                            //             context)
-                                                            //         .showSnackBar(SnackBar(
-                                                            //             content: Text(
-                                                            //                 "Your File is saved")));
-                                                            //   }
-                                                            // });
+                                                            savevideoonstorage(
+                                                                    imagelist[
+                                                                        index])
+                                                                .then((value) {
+                                                              if (value![
+                                                                      'isSuccess'] ==
+                                                                  true) {
+                                                                ScaffoldMessenger.of(
+                                                                        context)
+                                                                    .showSnackBar(SnackBar(
+                                                                        content:
+                                                                            Text("Your File is saved")));
+                                                              }
+                                                            });
                                                           },
                                                         ),
                                                       ),
@@ -257,7 +271,11 @@ class _VideoScreenState extends State<VideoScreen> {
     return thumb;
   }
 
-  /*
-    * thumbnailFolder property can be omitted if you dont wish to keep the generated thumbails past each usage
-    */
+  Future<Map?> savevideoonstorage(String? path) async {
+    final result =
+        await ImageGallerySaver.saveFile(path!, name: path.split("/").last);
+    print("==>!!!!!!!${result}");
+    setState(() {});
+    return result;
+  }
 }

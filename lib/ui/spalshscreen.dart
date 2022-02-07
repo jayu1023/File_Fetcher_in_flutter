@@ -217,7 +217,9 @@ class _SplashScreenState extends State<SplashScreen>
   Future<Map?> savefileinstorage(String? path, File img) async {
     // path = path!.replaceAll(img.path.split("/").last, "");
     // print(path);
-    final result = await ImageGallerySaver.saveFile(path!.split(".").last,
+
+    String name = img.path.split("/").last;
+    final result = await ImageGallerySaver.saveFile("${path}",
         name: img.path.split("/").last);
     print(result);
     setState(() {});

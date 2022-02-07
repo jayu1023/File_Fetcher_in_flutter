@@ -9,6 +9,6 @@ import 'package:whatsappstatusdownloader/ui/videoscreen.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: VideoScreen(),
+    home: SplashScreen(),
   ));
 }
