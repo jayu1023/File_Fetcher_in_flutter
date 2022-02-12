@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:whatsappstatusdownloader/ui/videoscreen.dart';
+import 'package:whatsappstatusdownloader/ui/videoscreen2.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -34,7 +36,14 @@ class _SplashScreenState extends State<SplashScreen>
     // checkpermission();
     return Scaffold(
         appBar: AppBar(
-          title: Text("Images is Here"),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => VideoScreen(isgranted: isgranted)));
+                },
+                icon: Icon(Icons.back_hand))
+          ],
         ),
         body: FutureBuilder(
           future: isgranted,
@@ -219,7 +228,7 @@ class _SplashScreenState extends State<SplashScreen>
     // print(path);
 
     String name = img.path.split("/").last;
-    final result = await ImageGallerySaver.saveFile("${path}",
+    final result = await ImageGallerySaver.saveFile("${path!.split(".").last}",
         name: img.path.split("/").last);
     print(result);
     setState(() {});

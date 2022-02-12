@@ -4,26 +4,28 @@ import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:thumbnails/thumbnails.dart';
+import 'package:workmanager/workmanager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class VideoScreen extends StatefulWidget {
-  const VideoScreen({Key? key}) : super(key: key);
+  Future<bool>? isgranted;
+  VideoScreen({Key? key, this.isgranted}) : super(key: key);
 
   @override
   _VideoScreenState createState() => _VideoScreenState();
 }
 
 class _VideoScreenState extends State<VideoScreen> {
-  Future<bool>? isgranted;
   final Directory path_dir =
       new Directory('/storage/emulated/0/Whatsapp/media/.Statuses');
   final Directory stored_dir = new Directory('/storage/emulated/0/Pictures/');
+
   void checkpermission() async {
     if (await Permission.storage.isGranted) {
-      isgranted = Permission.storage.isGranted;
+      widget.isgranted = Permission.storage.isGranted;
     } else {
       await Permission.storage.request();
-      isgranted = Permission.storage.isGranted;
+      widget.isgranted = Permission.storage.isGranted;
     }
     setState(() {});
   }
@@ -32,25 +34,25 @@ class _VideoScreenState extends State<VideoScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    checkpermission();
+    // checkpermission();
+    print("${widget.isgranted}");
+    //fetchdata();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("hello"),
-      ),
       body: FutureBuilder(
-        future: isgranted,
+        future: widget.isgranted,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.data != null) {
+            print("==......>${snapshot.data}");
             if (snapshot.data == true) {
               var imagelist = path_dir
                   .listSync(recursive: false, followLinks: false)
                   .map((e) => e.path)
                   .where((element) => element.endsWith("mp4"))
-                  .toList(growable: false);
+                  .toList();
 
               var storedvdlist = stored_dir
                   .listSync(
@@ -58,13 +60,16 @@ class _VideoScreenState extends State<VideoScreen> {
                   )
                   .map((e) => e.path.split("/").last)
                   .where((element) => element.endsWith("mp4"))
-                  .toList(growable: false);
+                  .toList();
+
+              print("====>>>>${imagelist}");
               return (Container(
                 margin: EdgeInsets.only(right: 5.0, left: 5.0, top: 2.0),
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
 
                 child: LiveGrid.options(
+                    shrinkWrap: true,
                     itemBuilder: (context, index, animation) {
                       return FadeTransition(
                           opacity: Tween<double>(
@@ -88,69 +93,50 @@ class _VideoScreenState extends State<VideoScreen> {
                                       future: getthumbnail(imagelist[index]),
                                       builder: (BuildContext context,
                                           AsyncSnapshot<dynamic> snapshot) {
-                                        if (snapshot.hasData) {
-                                          File vidthumbfile =
-                                              new File(snapshot.data);
-                                          return Stack(
-                                            alignment: Alignment.bottomRight,
-                                            children: [
-                                              Positioned.fill(
-                                                child: Container(
-                                                  width: 100.0,
-                                                  height: 100.0,
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20.0),
-                                                      image: DecorationImage(
-                                                          image: FileImage(
-                                                              vidthumbfile),
-                                                          fit: BoxFit.cover)),
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.done) {
+                                          if (snapshot.hasData) {
+                                            File vidthumbfile =
+                                                new File(snapshot.data);
+                                            return Stack(
+                                              alignment: Alignment.bottomRight,
+                                              children: [
+                                                Positioned.fill(
+                                                  child: Container(
+                                                    width: 100.0,
+                                                    height: 100.0,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20.0),
+                                                        image: DecorationImage(
+                                                            image: FileImage(
+                                                                vidthumbfile),
+                                                            fit: BoxFit.cover)),
+                                                  ),
                                                 ),
-                                              ),
-                                              Container(
-                                                width: 100.0,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.black
-                                                        .withOpacity(0.5),
-                                                    borderRadius: BorderRadius
-                                                        .only(
-                                                            topLeft:
-                                                                Radius.circular(
-                                                                    20.0),
-                                                            bottomRight:
-                                                                Radius.circular(
-                                                                    20.0))),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    SizedBox(
-                                                      width: 15.0,
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 5.0,
-                                                              bottom: 5.0),
-                                                      child: InkWell(
-                                                        child: Icon(
-                                                          Icons.share,
-                                                          color: Colors.white,
-                                                        ),
+                                                Container(
+                                                  width: 100.0,
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.black
+                                                          .withOpacity(0.5),
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                              topLeft: Radius
+                                                                  .circular(
+                                                                      20.0),
+                                                              bottomRight: Radius
+                                                                  .circular(
+                                                                      20.0))),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      SizedBox(
+                                                        width: 15.0,
                                                       ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 10.0,
-                                                    ),
-                                                    Visibility(
-                                                      visible: !storedvdlist
-                                                          .contains(
-                                                              imagelist[index]
-                                                                  .split("/")
-                                                                  .last),
-                                                      child: Padding(
+                                                      Padding(
                                                         padding:
                                                             const EdgeInsets
                                                                     .only(
@@ -158,38 +144,75 @@ class _VideoScreenState extends State<VideoScreen> {
                                                                 bottom: 5.0),
                                                         child: InkWell(
                                                           child: Icon(
-                                                            Icons.download,
+                                                            Icons.share,
                                                             color: Colors.white,
                                                           ),
-                                                          onTap: () {
-                                                            savevideoonstorage(
-                                                                    imagelist[
-                                                                        index])
-                                                                .then((value) {
-                                                              if (value![
-                                                                      'isSuccess'] ==
-                                                                  true) {
-                                                                ScaffoldMessenger.of(
-                                                                        context)
-                                                                    .showSnackBar(SnackBar(
-                                                                        content:
-                                                                            Text("Your File is saved")));
-                                                              }
-                                                            });
-                                                          },
                                                         ),
                                                       ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 8.0,
-                                                    )
-                                                  ],
+                                                      SizedBox(
+                                                        width: 10.0,
+                                                      ),
+                                                      Visibility(
+                                                        visible: !storedvdlist
+                                                            .contains(
+                                                                imagelist[index]
+                                                                    .split("/")
+                                                                    .last),
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  top: 5.0,
+                                                                  bottom: 5.0),
+                                                          child: InkWell(
+                                                            child: Icon(
+                                                              Icons.download,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                            onTap: () {
+                                                              savevideoonstorage(
+                                                                      imagelist[
+                                                                          index])
+                                                                  .then(
+                                                                      (value) {
+                                                                if (value![
+                                                                        'isSuccess'] ==
+                                                                    true) {
+                                                                  ScaffoldMessenger.of(
+                                                                          context)
+                                                                      .showSnackBar(SnackBar(
+                                                                          content:
+                                                                              Text("Your File is saved")));
+                                                                }
+                                                              });
+                                                            },
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 8.0,
+                                                      )
+                                                    ],
+                                                  ),
                                                 ),
+                                              ],
+                                            );
+                                          } else {
+                                            return Container(
+                                              child: Center(
+                                                child:
+                                                    CircularProgressIndicator(),
                                               ),
-                                            ],
-                                          );
+                                            );
+                                          }
                                         } else {
-                                          return Container();
+                                          return Container(
+                                            child: Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ),
+                                          );
                                         }
                                       },
                                     )),
@@ -245,15 +268,15 @@ class _VideoScreenState extends State<VideoScreen> {
                 //     }),
               ));
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text("please give permission it is required"),
-                behavior: SnackBarBehavior.floating,
-              ));
-              return Container();
+              return Container(
+                child: Text("null"),
+              );
             }
           } else {
             return Container(
-              child: Center(child: Text('null')),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
             );
           }
         },
@@ -272,10 +295,14 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   Future<Map?> savevideoonstorage(String? path) async {
-    final result =
-        await ImageGallerySaver.saveFile(path!, name: path.split("/").last);
+    final result = await ImageGallerySaver.saveFile(path!.split(".").last,
+        name: path.split("/").last);
     print("==>!!!!!!!${result}");
     setState(() {});
     return result;
+  }
+
+  Future<void> fetchdata() async {
+    //simpleTask will be emitted here.
   }
 }

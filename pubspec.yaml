@@ -39,6 +39,7 @@ dependencies:
   thumbnails: ^1.0.1
   image_gallery_saver: ^1.7.1
   auto_animated: ^3.0.1
+  workmanager: ^0.4.1
 
 
 
