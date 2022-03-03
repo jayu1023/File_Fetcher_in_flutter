@@ -40,7 +40,9 @@ class _SplashScreenState extends State<SplashScreen>
             IconButton(
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => VideoScreen(isgranted: isgranted)));
+                      builder: (context) => VideoScreen(
+                            isgranted: isgranted,
+                          )));
                 },
                 icon: Icon(Icons.back_hand))
           ],
@@ -48,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen>
         body: FutureBuilder(
           future: isgranted,
           builder: (context, snapshot) {
-            print("====>${snapshot.data}");
+            print("====!!!!!!>${snapshot.data}");
 
             if (snapshot.data != null) {
               if (snapshot.data == true) {

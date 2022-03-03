@@ -20,22 +20,12 @@ class _VideoScreenState extends State<VideoScreen> {
       new Directory('/storage/emulated/0/Whatsapp/media/.Statuses');
   final Directory stored_dir = new Directory('/storage/emulated/0/Pictures/');
 
-  void checkpermission() async {
-    if (await Permission.storage.isGranted) {
-      widget.isgranted = Permission.storage.isGranted;
-    } else {
-      await Permission.storage.request();
-      widget.isgranted = Permission.storage.isGranted;
-    }
-    setState(() {});
-  }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     // checkpermission();
-    print("${widget.isgranted}");
+    print("======!!!!>${widget.isgranted}");
     //fetchdata();
   }
 
@@ -45,8 +35,8 @@ class _VideoScreenState extends State<VideoScreen> {
       body: FutureBuilder(
         future: widget.isgranted,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          print("==......>${snapshot.data}");
           if (snapshot.data != null) {
-            print("==......>${snapshot.data}");
             if (snapshot.data == true) {
               var imagelist = path_dir
                   .listSync(recursive: false, followLinks: false)
@@ -95,9 +85,11 @@ class _VideoScreenState extends State<VideoScreen> {
                                           AsyncSnapshot<dynamic> snapshot) {
                                         if (snapshot.connectionState ==
                                             ConnectionState.done) {
-                                          if (snapshot.hasData) {
+                                          // ignore: unnecessary_null_comparison
+                                          if (snapshot != null) {
                                             File vidthumbfile =
                                                 new File(snapshot.data);
+
                                             return Stack(
                                               alignment: Alignment.bottomRight,
                                               children: [
@@ -106,13 +98,18 @@ class _VideoScreenState extends State<VideoScreen> {
                                                     width: 100.0,
                                                     height: 100.0,
                                                     decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20.0),
-                                                        image: DecorationImage(
-                                                            image: FileImage(
-                                                                vidthumbfile),
-                                                            fit: BoxFit.cover)),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20.0),
+                                                    ),
+                                                    child: FadeInImage(
+                                                      fit: BoxFit.cover,
+                                                      placeholder:
+                                                          const NetworkImage(
+                                                              "https://images.unsplash.com/photo-1641728799858-38abb82f6dd2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"),
+                                                      image: FileImage(
+                                                          vidthumbfile),
+                                                    ),
                                                   ),
                                                 ),
                                                 Container(
