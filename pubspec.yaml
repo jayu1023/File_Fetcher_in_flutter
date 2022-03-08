@@ -40,6 +40,8 @@ dependencies:
   image_gallery_saver: ^1.7.1
   auto_animated: ^3.0.1
   workmanager: ^0.4.1
+  easy_loader: ^2.0.0
+  flutter_easyloading: ^3.0.3
 
 
 
