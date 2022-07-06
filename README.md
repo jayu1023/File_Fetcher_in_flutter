@@ -1,11 +1,13 @@
-# whatsappstatusdownloader
+# File Fetcher Example in Flutter
 
-A new Flutter project.
+A new Flutter project wiht example of fetching file from device using flutter without any use of package .
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Just frok this repo and see how works file fetching in flutter
 
+
+Resources:-
 A few resources to get you started if this is your first Flutter project:
 
 - [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
