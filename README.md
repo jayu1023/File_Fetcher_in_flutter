@@ -1,6 +1,6 @@
 # File Fetcher Example in Flutter
 
-A new Flutter project wiht example of fetching file from device using flutter without any use of package .
+A new Flutter project with example of fetching file from device using flutter without any use of package .
 
 ## Getting Started
 
